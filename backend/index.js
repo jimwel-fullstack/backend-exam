@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 
 // require routes
 const userRoutes = require('./routes/userRoutes.js')
+const companyRoutes = require('./routes/companyRoutes.js')
 
 // express app
 const app = express()
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
 
 // routes
 app.use('/api/user/', userRoutes)
+app.use('/api/companies/', companyRoutes)
 
 // connect to db
 const PORT = process.env.PORT || 4000
