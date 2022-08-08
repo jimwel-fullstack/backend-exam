@@ -30,7 +30,7 @@ const AdminCompanyList = () => {
                 <tr className="align-middle">
                   <td>
                     <img
-                      className="rounded-circle"
+                      className="rounded"
                       width="50px"
                       height="50px"
                       src="https://pm1.narvii.com/6328/939399b0bc29e6982b7a59961a1f05ad15ebf494_hq.jpg"

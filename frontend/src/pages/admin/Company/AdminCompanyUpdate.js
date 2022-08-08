@@ -8,7 +8,7 @@ const AdminCompanyUpdate = () => {
     <AdminTemplate>
       <div className="container">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h3 className="mb-0">Add Company</h3>
+          <h3 className="mb-0">Update Company</h3>
           <Link className="btn btn-primary" to="/admin">
             Back
           </Link>

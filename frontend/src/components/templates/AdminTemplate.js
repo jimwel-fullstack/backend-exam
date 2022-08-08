@@ -1,7 +1,18 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+
+import useSignout from '../../hooks/useSignout'
 
 const AdminTemplate = ({ page, children }) => {
+  const auth = useSelector((state) => state.auth.value)
+
+  const { signout } = useSignout()
+
+  const handleSignout = () => {
+    signout()
+  }
+
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
@@ -43,8 +54,8 @@ const AdminTemplate = ({ page, children }) => {
             </ul>
 
             <div className="d-flex align-items-center">
-              <p className="mb-0 me-2">jimwel@fullstack.ph</p>
-              <button className="btn btn-secondary" type="submit">
+              <p className="mb-0 me-2">{auth.email}</p>
+              <button className="btn btn-secondary" onClick={handleSignout}>
                 Logout
               </button>
             </div>
