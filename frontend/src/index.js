@@ -7,12 +7,14 @@ import reportWebVitals from './reportWebVitals'
 import App from './App'
 
 import authReducer from './features/authSlice'
+import companyReducer from './features/companySlice'
 
 import './index.css'
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
+    companies: companyReducer,
   },
 })
 

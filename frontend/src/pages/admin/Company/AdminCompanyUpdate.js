@@ -1,9 +1,44 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 import AdminTemplate from '../../../components/templates/AdminTemplate'
 
 const AdminCompanyUpdate = () => {
+  let { companyId } = useParams()
+
+  const auth = useSelector((state) => state.auth.value)
+
+  const [newName, setNewName] = useState('')
+  const [newEmail, setNewEmail] = useState('')
+  const [newLogo, setNewLogo] = useState('')
+  const [newWebsite, setNewWebsite] = useState('')
+
+  const handleUpdate = async (e) => {
+    e.preventDefault()
+
+    const Company = {
+      name: newName,
+      email: newEmail,
+      logo: newLogo,
+      website: newWebsite,
+    }
+
+    const res = await fetch(`/api/companies/${companyId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${auth.token}`,
+      },
+      body: JSON.stringify(Company),
+    })
+    const json = await res.json()
+
+    if (res.ok) {
+      console.log('updated blog', json)
+    }
+  }
+
   return (
     <AdminTemplate>
       <div className="container">
@@ -13,31 +48,60 @@ const AdminCompanyUpdate = () => {
             Back
           </Link>
         </div>
+
         <div className="row">
           <div className="col-md-4 offset-md-4">
-            <div className="card">
+            <form className="card" onSubmit={handleUpdate}>
               <div className="card-body">
                 <div className="mb-3">
                   <label class="form-label">Name</label>
-                  <input type="text" className="form-control" />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={newName}
+                    onChange={(e) => {
+                      setNewName(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <label class="form-label">Email</label>
-                  <input type="text" className="form-control" />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={newEmail}
+                    onChange={(e) => {
+                      setNewEmail(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <label class="form-label">Logo</label>
-                  <input type="file" className="form-control" />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={newLogo}
+                    onChange={(e) => {
+                      setNewLogo(e.target.value)
+                    }}
+                  />
                 </div>
                 <div className="mb-3">
                   <label class="form-label">Website</label>
-                  <input type="text" className="form-control" />
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={newWebsite}
+                    onChange={(e) => {
+                      setNewWebsite(e.target.value)
+                    }}
+                  />
                 </div>
                 <div class="d-grid">
                   <button class="btn btn-primary">Submit</button>
                 </div>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
