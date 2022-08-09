@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
-import AdminTemplate from '../../../components/templates/AdminTemplate'
-import { SET_COMPANIES, DELETE_COMPANY } from '../../../features/companySlice'
+import EmployeeTemplate from '../../../components/templates/EmployeeTemplate'
+import { SET_COMPANIES } from '../../../features/companySlice'
 
-const AdminCompanyList = () => {
+const EmployeeCompanyList = () => {
   const dispatch = useDispatch()
 
   const auth = useSelector((state) => state.auth.value)
@@ -29,38 +28,11 @@ const AdminCompanyList = () => {
       fetchComapnies()
     }
   }, [])
-
-  const handleDelete = async (company) => {
-    if (!auth) {
-      return
-    }
-
-    const res = await fetch(`/api/companies/${company._id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${auth.token}`,
-      },
-    })
-
-    const json = await res.json()
-
-    if (res.ok) {
-      dispatch(
-        DELETE_COMPANY({
-          id: company._id,
-        })
-      )
-    }
-  }
-
   return (
-    <AdminTemplate page="companies">
+    <EmployeeTemplate page="companies">
       <div className="container">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h3 className="mb-0">Companies</h3>
-          <Link className="btn btn-primary" to="/admin/add/company">
-            Add
-          </Link>
         </div>
 
         <div className="card">
@@ -72,7 +44,6 @@ const AdminCompanyList = () => {
                   <th>Name</th>
                   <th>Email</th>
                   <th>Website</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -97,28 +68,6 @@ const AdminCompanyList = () => {
                         <td>{company.email}</td>
                         <td>
                           <a href={company.website}>{company.website}</a>
-                        </td>
-                        <td>
-                          <div
-                            class="btn-group btn-group-sm"
-                            role="group"
-                            aria-label="Basic example"
-                          >
-                            <Link
-                              class="btn btn-info"
-                              to={`/admin/edit/company/${company._id}`}
-                            >
-                              Edit
-                            </Link>
-                            <button
-                              class="btn btn-danger"
-                              onClick={() => {
-                                handleDelete(company)
-                              }}
-                            >
-                              Delete
-                            </button>
-                          </div>
                         </td>
                       </tr>
                     )
@@ -170,8 +119,8 @@ const AdminCompanyList = () => {
           </div>
         </div>
       </div>
-    </AdminTemplate>
+    </EmployeeTemplate>
   )
 }
 
-export default AdminCompanyList
+export default EmployeeCompanyList

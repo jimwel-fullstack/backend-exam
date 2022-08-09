@@ -10,6 +10,8 @@ import AdminCompanyList from './pages/admin/Company/AdminCompanyList'
 import AdminCompanyCreate from './pages/admin/Company/AdminCompanyCreate'
 import AdminCompanyUpdate from './pages/admin/Company/AdminCompanyUpdate'
 import Home from './pages/Home'
+import CreateAccount from './pages/CreateAccount'
+import EmployeeCompanyList from './pages/employee/Company/EmployeeCompanyList'
 
 const App = () => {
   const auth = useSelector((state) => state.auth.value)
@@ -19,6 +21,7 @@ const App = () => {
       {/* PUBLIC ROUTES */}
       <Route element={<PublicRoutes auth={auth} />}>
         <Route path="/" element={<Home />} />
+        <Route path="/create-account" element={<CreateAccount />} />
       </Route>
 
       {/* ADMIN ROUTES */}
@@ -36,7 +39,8 @@ const App = () => {
 
       {/* EMPLOYEE ROUTES */}
       <Route element={<EmployeeRoutes auth={auth} />}>
-        <Route path="/employee" element={<AdminCompanyList />} />
+        <Route path="/employee" element={<EmployeeCompanyList />} />
+        <Route path="/employee/employees" element={<EmployeeCompanyList />} />
       </Route>
 
       {/* FALLBACK ROUTES */}

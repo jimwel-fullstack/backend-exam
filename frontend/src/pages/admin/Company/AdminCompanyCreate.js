@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useSelector, useDispatch } from 'react-redux'
@@ -12,9 +12,10 @@ const AdminCompanyCreate = () => {
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [logo, setLogo] = useState('')
   const [website, setWebsite] = useState('')
+  const [logo, setLogo] = useState(null)
   const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
   const [emptyFields, setEmptyFields] = useState([])
 
   const handleCreate = async (e) => {
@@ -25,21 +26,27 @@ const AdminCompanyCreate = () => {
       return
     }
 
-    const company = { name, email, logo, website }
+    let formData = new FormData()
+
+    formData.append('logo', logo)
+    formData.append('name', name)
+    formData.append('email', email)
+    formData.append('website', website)
 
     const res = await fetch('/api/companies', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${auth.token}`,
+        Accept: 'application/json',
       },
-      body: JSON.stringify(company),
+      body: formData,
     })
     const json = await res.json()
 
     if (!res.ok) {
       setError(json.error)
       setEmptyFields(json.emptyFields)
+      setSuccess(null)
     }
 
     if (res.ok) {
@@ -54,9 +61,10 @@ const AdminCompanyCreate = () => {
       )
       setName('')
       setEmail('')
-      setLogo('')
       setWebsite('')
       setError(null)
+      setSuccess('Company added successfully')
+      setEmptyFields([])
       console.log('new blog added', json)
     }
   }
@@ -71,18 +79,25 @@ const AdminCompanyCreate = () => {
         </div>
         <div className="row">
           <div className="col-md-4 offset-md-4">
-            <form className="card" onSubmit={handleCreate}>
+            <form className="card mb-3" onSubmit={handleCreate}>
               <div className="card-body">
                 {error && (
                   <div class="alert alert-danger" role="alert">
                     {error}
                   </div>
                 )}
+                {success && (
+                  <div class="alert alert-success" role="alert">
+                    {success}
+                  </div>
+                )}
                 <div className="mb-3">
                   <label class="form-label">Name</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control ${
+                      emptyFields.includes('name') && 'border-danger'
+                    }`}
                     value={name}
                     onChange={(e) => {
                       setName(e.target.value)
@@ -93,7 +108,9 @@ const AdminCompanyCreate = () => {
                   <label class="form-label">Email</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control ${
+                      emptyFields.includes('email') && 'border-danger'
+                    }`}
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value)
@@ -103,19 +120,23 @@ const AdminCompanyCreate = () => {
                 <div className="mb-3">
                   <label class="form-label">Logo</label>
                   <input
-                    type="text"
-                    className="form-control"
-                    value={logo}
+                    type="file"
+                    className={`form-control ${
+                      emptyFields.includes('logo') && 'border-danger'
+                    }`}
                     onChange={(e) => {
-                      setLogo(e.target.value)
+                      setLogo(e.target.files[0])
                     }}
+                    required
                   />
                 </div>
                 <div className="mb-3">
                   <label class="form-label">Website</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control ${
+                      emptyFields.includes('website') && 'border-danger'
+                    }`}
                     value={website}
                     onChange={(e) => {
                       setWebsite(e.target.value)

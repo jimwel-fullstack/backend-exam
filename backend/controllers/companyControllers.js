@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const validator = require('validator')
 
 const Company = require('../models/companyModel')
 
@@ -28,7 +29,8 @@ const getCompany = async (req, res) => {
 
 // create company
 const createCompany = async (req, res) => {
-  const { name, email, logo, website } = req.body
+  const { name, email, website } = req.body
+  const logo = req.file.filename
 
   let emptyFields = []
 
@@ -40,12 +42,28 @@ const createCompany = async (req, res) => {
     emptyFields.push('email')
   }
 
-  if (!logo) {
-    emptyFields.push('logo')
+  if (!validator.isEmail(email)) {
+    return res.status(400).json({ error: 'Email is not valid', emptyFields })
   }
 
   if (!website) {
     emptyFields.push('website')
+  }
+
+  if (
+    !validator.isURL(website, {
+      require_protocol: true,
+    })
+  ) {
+    return res.status(400).json({ error: 'Website is not valid', emptyFields })
+  }
+
+  if (!logo) {
+    emptyFields.push('logo')
+  }
+
+  if (logo === '' || logo === null) {
+    res.status(400).json({ error: 'Logo is missing' })
   }
 
   if (emptyFields.length > 0) {
@@ -56,7 +74,7 @@ const createCompany = async (req, res) => {
 
   // add doc to db
   try {
-    const company = await Company.create({ name, email, logo, website })
+    const company = await Company.create({ name, email, website, logo })
     res.status(200).json(company)
   } catch (error) {
     res.status(400).json({ error: error.message })
@@ -83,6 +101,7 @@ const deleteCompany = async (req, res) => {
 // update company
 const updateCompany = async (req, res) => {
   const { id } = req.params
+  const logo = req.file.filename
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: 'No such company' })
@@ -92,6 +111,7 @@ const updateCompany = async (req, res) => {
     { _id: id },
     {
       ...req.body,
+      logo: logo,
     }
   )
 

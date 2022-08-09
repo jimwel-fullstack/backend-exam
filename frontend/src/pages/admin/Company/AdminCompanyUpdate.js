@@ -11,30 +11,58 @@ const AdminCompanyUpdate = () => {
 
   const [newName, setNewName] = useState('')
   const [newEmail, setNewEmail] = useState('')
-  const [newLogo, setNewLogo] = useState('')
+  const [newLogo, setNewLogo] = useState(null)
   const [newWebsite, setNewWebsite] = useState('')
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
+
+  useEffect(() => {
+    const fetchComapny = async () => {
+      const res = await fetch(`/api/companies/${companyId}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
+      const json = await res.json()
+
+      setNewName(json.name)
+      setNewEmail(json.email)
+      setNewWebsite(json.website)
+    }
+
+    if (auth) {
+      fetchComapny()
+    }
+  }, [])
 
   const handleUpdate = async (e) => {
     e.preventDefault()
 
-    const Company = {
-      name: newName,
-      email: newEmail,
-      logo: newLogo,
-      website: newWebsite,
-    }
+    let formData = new FormData()
+
+    formData.append('logo', newLogo)
+    formData.append('name', newName)
+    formData.append('email', newEmail)
+    formData.append('website', newWebsite)
 
     const res = await fetch(`/api/companies/${companyId}`, {
       method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${auth.token}`,
+        Accept: 'application/json',
       },
-      body: JSON.stringify(Company),
+      body: formData,
     })
     const json = await res.json()
 
+    if (!res.ok) {
+      setError(json.error)
+      setSuccess(null)
+    }
+
     if (res.ok) {
+      setError(null)
+      setSuccess('Company updated successfully')
       console.log('updated blog', json)
     }
   }
@@ -53,6 +81,16 @@ const AdminCompanyUpdate = () => {
           <div className="col-md-4 offset-md-4">
             <form className="card" onSubmit={handleUpdate}>
               <div className="card-body">
+                {error && (
+                  <div class="alert alert-danger" role="alert">
+                    {error}
+                  </div>
+                )}
+                {success && (
+                  <div class="alert alert-success" role="alert">
+                    {success}
+                  </div>
+                )}
                 <div className="mb-3">
                   <label class="form-label">Name</label>
                   <input
@@ -78,12 +116,12 @@ const AdminCompanyUpdate = () => {
                 <div className="mb-3">
                   <label class="form-label">Logo</label>
                   <input
-                    type="text"
+                    type="file"
                     className="form-control"
-                    value={newLogo}
                     onChange={(e) => {
-                      setNewLogo(e.target.value)
+                      setNewLogo(e.target.files[0])
                     }}
+                    required
                   />
                 </div>
                 <div className="mb-3">
